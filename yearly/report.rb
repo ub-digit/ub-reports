@@ -68,12 +68,16 @@ module Yearly
       @xl.cell("B6", "FJÄRRUTLÅN", "top_head")
       @xl.cell("L6", "HEMLÅN", "top_head")
       @xl.cell("Q6", "FJÄRRINLÅN", "top_head")
+      @xl.cell("W6", "EJ AVHÄMTADE/LÅNADE FJÄRRINLÅN", "top_head")
       @xl.cell("B7", "Svenska bibliotek", "sv_head")
       @xl.cell("G7", "Utländska bibliotek", "for_head")
       @xl.cell("Q7", "Svenska bibliotek", "sv_head")
       @xl.cell("R7", "Utländska bibliotek", "for_head")
       @xl.cell("S7", "", "sumvalue")
       @xl.cell("T7", "", "sumvalue")
+      @xl.cell("X7", "Svenska bibliotek", "sv_head")
+      @xl.cell("Y7", "Utländska bibliotek", "for_head")
+      @xl.cell("Z7", "Totalt", "title")
       @xl.cell_list("A8", [
         "BIBLIOTEK",
         "Initiala", "Omlån tot", "vanliga", "auto", "Summa",
@@ -86,6 +90,7 @@ module Yearly
       @xl.add_merge("B6:K6")
       @xl.add_merge("L6:P6")
       @xl.add_merge("Q6:T6")
+      @xl.add_merge("W6:Z6")
       @xl.add_merge("B7:F7")
       @xl.add_merge("G7:K7")
       LIBROW.keys.each do |libcode|
@@ -101,7 +106,8 @@ module Yearly
         pos = "U#{rownum}"
         @xl.cell(pos, "=B#{rownum}+G#{rownum}+L#{rownum}+Q#{rownum}+R#{rownum}")
       end
-      col_widths = [11.4]*21
+      @xl.cell("W8", "Summa", "sumvalue_total")
+      col_widths = [11.4]*26
       @xl.set_column_widths(col_widths)
     end
 
@@ -112,6 +118,7 @@ module Yearly
         fill_data_normal("L", "homeloan", lib)
         fill_data_illin("Q", "illin", lib)
       end
+      fill_data_illin_unissued("X8")
     end
 
     def sum_above(colnum, rownum_start, rownum_end)
@@ -122,6 +129,14 @@ module Yearly
 
     def librow_range()
       [LIBROW.values.min, LIBROW.values.max]
+    end
+
+    def fill_data_illin_unissued(start_cell)
+      hashdata = @data["illin"]["unissued"]
+      se_sum = hashdata["se"]
+      for_sum = hashdata["for"]
+      total_sum = se_sum + for_sum
+      @xl.cell_list(start_cell, [se_sum, for_sum, total_sum], "sumvalue_total")
     end
 
     def fill_data_normal(start_col_excel, name, lib)

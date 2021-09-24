@@ -20,9 +20,14 @@ module Yearly
       query = read_query_from_file("illin")
       query.gsub!(/%%QUERY_YEAR%%/, year)
       data = fetch_query(query)
+      unissued_query = read_query_from_file("illin-unissued")
+      unissued_query.gsub!(/%%QUERY_YEAR%%/, year)
+      unissued_data = fetch_query(unissued_query)
       libraries = make_stats(data)
+      unissued = make_unissued_stats(unissued_data)
       totals = make_totals(libraries)
       libraries["totals"] = totals
+      libraries["unissued"] = unissued
       libraries
     end
 
@@ -42,7 +47,7 @@ module Yearly
         next if lib.nil? || lib.empty?
         libraries[lib] ||= hash_init()
         if row["type"] == "issue"
-          if get_country_for_sigel(row["sigel"]) == "se"
+          if get_country_for_sigel(row["sigel"], row["itemnumber"]) == "se"
             libraries[lib]["initial_sv"] += 1
           else
             libraries[lib]["initial_for"] += 1
@@ -54,6 +59,18 @@ module Yearly
         end
       end
       libraries
+    end
+
+    def make_unissued_stats(data)
+      unissued = {"se" => 0, "for" => 0}
+      data.each do |row|
+        if get_country_for_sigel(row["sigel"], row["itemnumber"]) == "se"
+          unissued["se"] += 1
+        else
+          unissued["for"] += 1
+        end
+      end
+      unissued
     end
 
     def make_totals(libraries)
@@ -76,7 +93,12 @@ module Yearly
       @sigel = JSON.parse(File.read("#{@subpath}/data/sigel_cache.json"))
     end
 
-    def get_country_for_sigel(sigel)
+    def get_country_for_sigel(sigel, itemnumber)
+      # Special case where sigel is missing. Distribute roughly equal between se and non-se
+      if(sigel =~ /^\d\d\d\d\d\d$/)
+        return (itemnumber.to_i & 1) ? "se" : "other"
+      end
+      
       if(@sigel[sigel])
         return @sigel[sigel]
       else
