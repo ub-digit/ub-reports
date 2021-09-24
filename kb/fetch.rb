@@ -7,8 +7,9 @@ module KB
 
     def run(year)
       # kb10 = fetch_kb10(year)
-      kb11 = fetch_kb11()
-      pp kb11
+      # kb11 = fetch_kb11()
+      kb12 = fetch_kb12()
+      pp kb12
     end
     
     def fetch_kb10(year)
@@ -100,6 +101,23 @@ module KB
       sab_data = quick_fetch("kb11_sab")
       dewey_data = quick_fetch("kb11_dewey")
       sab_data[0]["antal"].to_i + dewey_data[0]["antal"].to_i
+    end
+
+    def fetch_kb12()
+      paper_data = quick_fetch("kb12_paper")[0]
+      elec_data = quick_fetch("kb12_elec")[0]
+      {
+        "paper" => {
+          "svenska" => paper_data["svenska"],
+          "minoritet" => paper_data["minoritet"],
+          "ovrigt" => paper_data["ovrigt"]
+        },
+        "elec" => {
+          "svenska" => elec_data["svenska"],
+          "minoritet" => elec_data["minoritet"],
+          "ovrigt" => elec_data["ovrigt"]
+        }
+      }
     end
 
     def quick_fetch(query_name)
