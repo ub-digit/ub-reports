@@ -6,18 +6,19 @@ module KB
     end
 
     def run(year)
-      data = fetch_main(year)
-      subscription_count = fetch_subscriptions()
-      set("subscriptions", data["total"], data["acq"], subscription_count, nil)
-      pp data
+      # kb10 = fetch_kb10(year)
+      kb11 = fetch_kb11()
+      pp kb11
     end
-
-    def fetch_main(year)
+    
+    def fetch_kb10(year)
       query = read_query_from_file("kb10")
       data = main_stats(query, year)
       set("audiobooks", data["total"], data["acq"], nil, nil)
       set("daisybooks", data["total"], data["acq"], nil, nil)
       set("newspapers", data["total"], data["acq"], 10, nil)
+      subscription_count = fetch_subscriptions()
+      set("subscriptions", data["total"], data["acq"], subscription_count, nil)
       data
     end
 
@@ -94,7 +95,18 @@ module KB
       total[code] = total_value
       acq[code] = acq_value
     end
-    
+
+    def fetch_kb11()
+      sab_data = quick_fetch("kb11_sab")
+      dewey_data = quick_fetch("kb11_dewey")
+      sab_data[0]["antal"].to_i + dewey_data[0]["antal"].to_i
+    end
+
+    def quick_fetch(query_name)
+      query = read_query_from_file(query_name)
+      fetch_query(query).to_a
+    end
+
     def read_query_from_file(query_name)
       File.open("#{@subpath}/queries/#{query_name}.sql", "r:utf-8") do |f|
         return f.read
