@@ -11,6 +11,19 @@ class Report
     acquisitions(db, year)
   end
 
+  def self.run_one(year, report_name)
+    db = DB.new
+    if report_name == "yearly"
+      yearly(db, year)
+    elsif report_name == "transactions"
+      transactions(db, year)
+    elsif report_name == "acquisitions"
+      acquisitions(db, year)
+    else
+      puts "Unknown report name: #{report_name}"
+    end
+  end
+
   def self.yearly(db, year)
     puts "Creating yearly report [#{year}]..."
     Yearly::Report.run(db, "yearly", "output/yearly-#{year}.xlsx", year)
@@ -29,9 +42,13 @@ end
 
 if __FILE__ == $0
   if ARGV[0] && ARGV[0][/^\d\d\d\d$/]
-    Report.run_all(ARGV[0])
+    if ARGV[1]
+      Report.run_one(ARGV[0], ARGV[1])
+    else
+      Report.run_all(ARGV[0])
+    end
   else
-    puts "Usage: #{$0} year"
+    puts "Usage: #{$0} year [report-name]"
     exit
   end
 end
