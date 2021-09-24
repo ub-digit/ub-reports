@@ -13,4 +13,3 @@ JOIN items i
   AND i.itype NOT IN ('13', '16')
 WHERE 1=1
 ORDER BY b.id
-

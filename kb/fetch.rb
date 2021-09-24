@@ -8,18 +8,19 @@ module KB
     def run(year)
       # kb10 = fetch_kb10(year)
       # kb11 = fetch_kb11()
-      kb12 = fetch_kb12()
-      pp kb12
+      # kb12 = fetch_kb12()
+      kb14 = fetch_kb14(year)
+      pp kb14
     end
     
     def fetch_kb10(year)
       query = read_query_from_file("kb10")
       data = main_stats(query, year)
-      set("audiobooks", data["total"], data["acq"], nil, nil)
-      set("daisybooks", data["total"], data["acq"], nil, nil)
-      set("newspapers", data["total"], data["acq"], 10, nil)
+      set_kb10("audiobooks", data["total"], data["acq"], nil, nil)
+      set_kb10("daisybooks", data["total"], data["acq"], nil, nil)
+      set_kb10("newspapers", data["total"], data["acq"], 10, nil)
       subscription_count = fetch_subscriptions()
-      set("subscriptions", data["total"], data["acq"], subscription_count, nil)
+      set_kb10("subscriptions", data["total"], data["acq"], subscription_count, nil)
       data
     end
 
@@ -51,48 +52,48 @@ module KB
       total = hash_init()
       acq = hash_init()
       fetch_query(query).each do |row|
-        parse_row(total, acq, year, row)
+        parse_kb10_row(total, acq, year, row)
       end
       {"total" => total, "acq" => acq}
     end
 
-    def parse_row(total, acq, year, row)
+    def parse_kb10_row(total, acq, year, row)
       if row["pos06"] == "a" && row["pos07"][/[cdm]/]
-        inc("written_books", total, acq, row["year"], year)
-        inc("textbooks", total, acq, row["year"], year) if(row["itype"].to_s == "2")
+        inc_kb10("written_books", total, acq, row["year"], year)
+        inc_kb10("textbooks", total, acq, row["year"], year) if(row["itype"].to_s == "2")
       elsif row["pos06"] == "l"
-        inc("audiobooks", total, acq, row["year"], year)
+        inc_kb10("audiobooks", total, acq, row["year"], year)
       elsif row["pos06"] == "j"
-        inc("music_recordings", total, acq, row["year"], year)
+        inc_kb10("music_recordings", total, acq, row["year"], year)
       elsif row["pos06"] == "g"
-        inc("film_tv", total, acq, row["year"], year)
+        inc_kb10("film_tv", total, acq, row["year"], year)
       elsif row["itype"] == "17"
-        inc("microfilm", total, acq, row["year"], year)
+        inc_kb10("microfilm", total, acq, row["year"], year)
       elsif row["pos06"][/[kef]/]
-        inc("images", total, acq, row["year"], year)
+        inc_kb10("images", total, acq, row["year"], year)
       elsif row["pos06"][/[cdt]/]
-        inc("manuscripts", total, acq, row["year"], year)
+        inc_kb10("manuscripts", total, acq, row["year"], year)
       elsif row["pos06"] == "a" && row["pos07"][/[ab]/]
-        inc("manuscripts", total, acq, row["year"], year)
+        inc_kb10("manuscripts", total, acq, row["year"], year)
       elsif row["pos06"] == "a" && row["pos07"] == "m" && row["cf8_pos29"] == "1"
-        inc("manuscripts", total, acq, row["year"], year)
+        inc_kb10("manuscripts", total, acq, row["year"], year)
       elsif row["pos06"] == "a" && row["pos07"] == "m" && row["cf8_pos24_27"][/^t/]
-        inc("manuscripts", total, acq, row["year"], year)
+        inc_kb10("manuscripts", total, acq, row["year"], year)
       elsif row["pos06"] == "a" && row["pos07"] == "m" && row["cf8_pos24_27"][/^j/]
-        inc("manuscripts", total, acq, row["year"], year)
+        inc_kb10("manuscripts", total, acq, row["year"], year)
       elsif row["pos06"] == "m"
-        inc("interactive", total, acq, row["year"], year)
+        inc_kb10("interactive", total, acq, row["year"], year)
       elsif row["pos06"][/[opr]/]
-        inc("other", total, acq, row["year"], year)
+        inc_kb10("other", total, acq, row["year"], year)
       end
     end
     
-    def inc(code, total, acq, acq_year, report_year)
+    def inc_kb10(code, total, acq, acq_year, report_year)
       total[code] += 1
       acq[code] += 1 if(acq_year.to_s == report_year.to_s)
     end
 
-    def set(code, total, acq, total_value, acq_value)
+    def set_kb10(code, total, acq, total_value, acq_value)
       total[code] = total_value
       acq[code] = acq_value
     end
@@ -118,6 +119,71 @@ module KB
           "ovrigt" => elec_data["ovrigt"]
         }
       }
+    end
+
+    def fetch_kb14(year)
+      query = read_query_from_file("kb14")
+      query.gsub!(/%%QUERY_YEAR%%/, year)
+
+      issues = hash_init()
+      renews = hash_init()
+      fetch_query(query).each do |row|
+        parse_kb14_row(issues, renews, row)
+      end
+      set_kb10("audiobooks", issues, renews, nil, nil)
+      set_kb10("daisybooks", issues, renews, nil, nil)
+      set_kb10("newspapers", issues, renews, nil, nil)
+
+      {
+        "issues" => issues,
+        "renews" => renews
+      }
+    end
+
+    def parse_kb14_row(issues, renews, row)
+      if row["pos06"] == "a" && row["pos07"][/[cdm]/]
+        inc_kb14("written_books", issues, renews, row["type"])
+        inc_kb14("textbooks", issues, renews, row["type"]) if(row["itemtype"].to_s == "2")
+      elsif row["pos06"] == "a" && row["pos07"] == "s"
+        inc_kb14("subscriptions", issues, renews, row["type"])
+      elsif row["pos06"] == "l"
+        inc_kb14("audiobooks", issues, renews, row["type"])
+      elsif row["pos06"] == "j"
+        inc_kb14("music_recordings", issues, renews, row["type"])
+      elsif row["pos06"] == "g"
+        inc_kb14("film_tv", issues, renews, row["type"])
+      elsif row["itemtype"] == "17"
+        inc_kb14("microfilm", issues, renews, row["type"])
+      elsif row["pos06"][/[kef]/]
+        inc_kb14("images", issues, renews, row["type"])
+      elsif row["pos06"][/[cdt]/]
+        inc_kb14("manuscripts", issues, renews, row["type"])
+      elsif row["pos06"] == "a" && row["pos07"][/[ab]/]
+        inc_kb14("manuscripts", issues, renews, row["type"])
+      elsif row["pos06"] == "a" && row["pos07"] == "m" && row["cf8_pos29"] == "1"
+        inc_kb14("manuscripts", issues, renews, row["type"])
+      elsif row["pos06"] == "a" && row["pos07"] == "m" && row["cf8_pos24_27"][/^t/]
+        inc_kb14("manuscripts", issues, renews, row["type"])
+      elsif row["pos06"] == "a" && row["pos07"] == "m" && row["cf8_pos24_27"][/^j/]
+        inc_kb14("manuscripts", issues, renews, row["type"])
+      elsif row["pos06"] == "m"
+        inc_kb14("interactive", issues, renews, row["type"])
+      elsif row["pos06"][/[opr]/]
+        inc_kb14("other", issues, renews, row["type"])
+      end
+    end
+
+    def inc_kb14(code, issues, renews, type)
+      if type == "renew"
+        renews[code] += 1
+      else
+        issues[code] += 1
+      end
+    end
+
+    def set_kb14(code, issues, renews, issues_value, renews_value)
+      issues[code] = issues_value
+      renews[code] = renews_value
     end
 
     def quick_fetch(query_name)
