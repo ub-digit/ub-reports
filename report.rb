@@ -2,6 +2,7 @@ require_relative 'common/db'
 require_relative 'yearly/report'
 require_relative 'transactions/report'
 require_relative 'acquisitions/report'
+require_relative 'kb/report'
 
 class Report
   def self.run_all(year)
@@ -9,6 +10,7 @@ class Report
     yearly(db, year)
     transactions(db, year)
     acquisitions(db, year)
+    kb(db, year)
   end
 
   def self.run_one(year, report_name)
@@ -19,6 +21,8 @@ class Report
       transactions(db, year)
     elsif report_name == "acquisitions"
       acquisitions(db, year)
+    elsif report_name == "kb"
+      kb(db, year)
     else
       puts "Unknown report name: #{report_name}"
     end
@@ -37,6 +41,11 @@ class Report
   def self.acquisitions(db, year)
     puts "Creating acquistions report [#{year}]..."
     Acquisitions::Report.run(db, "acquisitions", "output/acquisitions-#{year}.xlsx", year)
+  end
+
+  def self.kb(db, year)
+    puts "Creating kb report [#{year}]..."
+    KB::Report.run(db, "kb", "output/kb-#{year}.xlsx", year)
   end
 end
 
