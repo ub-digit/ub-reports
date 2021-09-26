@@ -6,11 +6,18 @@ module KB
     end
 
     def run(year)
-      # kb10 = fetch_kb10(year)
-      # kb11 = fetch_kb11()
-      # kb12 = fetch_kb12()
+      kb10 = fetch_kb10(year)
+      kb11 = fetch_kb11()
+      kb12 = fetch_kb12()
       kb14 = fetch_kb14(year)
-      pp kb14
+      kb15 = fetch_kb15(year)
+      {
+        "kb10" => kb10,
+        "kb11" => kb11,
+        "kb12" => kb12,
+        "kb14" => kb14,
+        "kb15" => kb15,
+      }
     end
     
     def fetch_kb10(year)
@@ -184,6 +191,46 @@ module KB
     def set_kb14(code, issues, renews, issues_value, renews_value)
       issues[code] = issues_value
       renews[code] = renews_value
+    end
+
+    def fetch_kb15(year)
+      query = read_query_from_file("kb15")
+      query.gsub!(/%%QUERY_YEAR%%/, year)
+
+      seen_borrowers = {}
+      data = { "male" => 0, "female" => 0, "other" => 0, "lowage" => 0 }
+      fetch_query(query, :koha).each do |row|
+        next if seen_borrowers[row["borrowernumber"]]
+        seen_borrowers[row["borrowernumber"]] = true
+        pnr = row["attribute"]
+        next if pnr.nil?
+        pnr_gender = gender(pnr)
+        data["male"] += 1 if pnr_gender == :male
+        data["female"] += 1 if pnr_gender == :female
+        data["other"] += 1 if pnr_gender == :other
+        data["lowage"] += 1 if lowage?(pnr, year)
+      end
+      data
+    end
+
+    def gender(pnr)
+      return :other if pnr.length != 10
+      return :other if pnr[8] !~ /^\d$/
+      return :male if pnr[8].to_i % 2 == 1
+      return :female
+    end
+
+    def lowage?(pnr, year)
+      lowage_thres = 18
+      return false if pnr.length != 10
+      return false if pnr[0..1] !~ /^\d\d$/
+      yearstart2 = ((year.to_i - lowage_thres).to_s)[/\d\d(\d\d)/,1]
+      return false if yearstart2.nil?
+      yearend2 = (year.to_i.to_s)[/\d\d(\d\d)/,1]
+      return false if yearend2.nil?
+      pnryear = pnr[0..1].to_i
+      return true if pnryear >= yearstart2.to_i && pnryear <= yearend2.to_i
+      return false
     end
 
     def quick_fetch(query_name)
