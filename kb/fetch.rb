@@ -10,13 +10,13 @@ module KB
       kb11 = fetch_kb11()
       kb12 = fetch_kb12()
       kb14 = fetch_kb14(year)
-      kb15 = fetch_kb15(year)
+      kb19 = fetch_kb19(year)
       {
         "kb10" => kb10,
         "kb11" => kb11,
         "kb12" => kb12,
         "kb14" => kb14,
-        "kb15" => kb15,
+        "kb19" => kb19,
       }
     end
     
@@ -193,8 +193,8 @@ module KB
       renews[code] = renews_value
     end
 
-    def fetch_kb15(year)
-      query = read_query_from_file("kb15")
+    def fetch_kb19(year)
+      query = read_query_from_file("kb19")
       query.gsub!(/%%QUERY_YEAR%%/, year)
 
       seen_borrowers = {}

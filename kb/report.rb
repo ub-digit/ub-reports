@@ -30,19 +30,8 @@ module KB
       kb11(data["kb11"])
       kb12(data["kb12"])
       kb14(data["kb14"])
-      kb15(data["kb15"])
+      kb19(data["kb19"])
       @xl.set_current_sheet("10 bestånd förvärv")
-      # @sheet = data["year"]
-      # @xl.add_sheet(@sheet, 15, 10000)
-      # place_tables(data)
-      # col_widths = [2.3, 1.3, 0.75, 0.75, 2.3, 1.3, 0.75, 0.75, 1.3, 2.3, 1.3, 0.75]
-      # @xl.set_column_widths(col_widths.map {|x| x*12 })
-      # @xl.add_sheet("Sammanfattning", 15, 1000)
-      # @xl.set_current_sheet("Sammanfattning")
-      # place_sigel_tables(data["sigel"])
-      # place_total_table(data["total"])
-      # col_widths = [1.3, 1.3, 0.75, 0.75, 1.3, 1.3, 0.75, 0.75, 1.3, 0.75, 1.3, 0.75, 1.3, 0.75]
-      # @xl.set_column_widths(col_widths.map {|x| x*12 })
     end
   
     def kb10(data)
@@ -143,7 +132,7 @@ module KB
       [decode[code], issues, renews, issues.to_i + renews.to_i]
     end
   
-    def kb15(data)
+    def kb19(data)
       @xl.add_sheet("19 Hur många aktiva låntagare", 10, 50)
       @xl.set_current_sheet("19 Hur många aktiva låntagare")
       @xl.cell_list("B4", ["Låntagare", "Antal"], "title")
