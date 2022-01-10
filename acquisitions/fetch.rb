@@ -12,7 +12,7 @@ module Acquisitions
 
     def run(year)
       @year = year
-      @short_year = year.to_s[-2..]
+      @short_year = year.to_s[-2..(year.size+1)]
       # data = fetch_cached()
       data = fetch()
       parse_data(data)

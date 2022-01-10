@@ -95,7 +95,7 @@ module Yearly
 
     def get_country_for_sigel(sigel, itemnumber)
       # Special case where sigel is missing. Distribute roughly equal between se and non-se
-      if(sigel =~ /^\d\d\d\d\d\d$/)
+      if(!sigel || sigel =~ /^\d\d\d\d\d\d$/)
         return (itemnumber.to_i & 1) ? "se" : "other"
       end
       
