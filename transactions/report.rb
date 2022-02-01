@@ -71,6 +71,8 @@ module Transactions
       @xl.add_pivot(range: "A5:G30", datasheet: "Lånedata", datarange: "A1:G#{@loan_data_size+1}",
         rows: ["KATEGORI"], columns: ["EXTYP"], data: "ANTAL", pages: ["DATUM", "TRANS", "BIBL", "AGANDE"],
         style_info: "PivotStyleMedium15")
+      col_widths = [1.0]*7
+      @xl.set_column_widths(col_widths.map {|x| x*12 })
     end
 
     def save_xlsx(filename)
