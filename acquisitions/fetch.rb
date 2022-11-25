@@ -2,7 +2,7 @@ require_relative 'koha_avs'
 
 module Acquisitions
   class Fetch
-    QUERY="acq_pg"
+    QUERY="acq"
 
     def initialize(db, subpath)
       @db = db
@@ -119,7 +119,7 @@ module Acquisitions
     end
 
     def fetch_query(query)
-      @db.pg.query(query)
+      @db.mysql.query(query)
     end
   end
 end

@@ -1,7 +1,7 @@
 SELECT oi.branchcode,
        oi.auto_renew,
        COUNT(*) AS Antal,
-       SUM(oi.renewals) AS renewals
+       SUM(oi.renewals_count) AS renewals
   FROM old_issues oi
   JOIN borrowers b
     ON oi.borrowernumber = b.borrowernumber

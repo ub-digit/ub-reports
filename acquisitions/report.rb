@@ -70,6 +70,7 @@ module Acquisitions
     end
 
     def place_table(start_cell, data, totals)
+      return if(data.nil?)
       x, y = start_cell
       @xl.cell_list(start_cell, ["Extyp / lokalisering", "Antal bibposter", "Antal ex"], "title")
       y += 1

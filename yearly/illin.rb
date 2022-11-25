@@ -1,6 +1,7 @@
 require 'json'
 require 'open-uri'
 require 'uri'
+require 'cgi'
 
 module Yearly
   class ILLIn
@@ -107,8 +108,8 @@ module Yearly
     end
 
     def fetch_sigel_country(sigel)
-      encoded_sigel = URI.escape(sigel)
-      open(SIGEL_URL + encoded_sigel) do |u|
+      encoded_sigel = CGI.escape(sigel)
+      URI.open(SIGEL_URL + encoded_sigel) do |u|
         json = JSON.parse(u.read)
         if !json["query"]["operation"][/; dump/] && json["libraries"].length > 0
           @sigel[sigel] = json["libraries"][0]["country_code"]

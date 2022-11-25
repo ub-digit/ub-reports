@@ -33,7 +33,7 @@ module KB
 
     def fetch_subscriptions()
       query = read_query_from_file("subscriptions")
-      data = fetch_query(query, :koha).to_a
+      data = fetch_query(query).to_a
       data[0]["antal"]
     end
 
@@ -199,7 +199,7 @@ module KB
 
       seen_borrowers = {}
       data = { "male" => 0, "female" => 0, "other" => 0, "lowage" => 0 }
-      fetch_query(query, :koha).each do |row|
+      fetch_query(query).each do |row|
         next if seen_borrowers[row["borrowernumber"]]
         seen_borrowers[row["borrowernumber"]] = true
         pnr = row["attribute"]
@@ -249,9 +249,8 @@ module KB
       # File.open("temp/temp.json", "rb") { |f| JSON.parse(f.read) }
     end
 
-    def fetch_query(query, source = :pg)
-      return @db.pg.query(query) if source == :pg
-      return @db.mysql.query(query) if source == :koha
+    def fetch_query(query)
+      @db.mysql.query(query)
     end
   end
 end
