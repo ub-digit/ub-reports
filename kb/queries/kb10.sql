@@ -6,7 +6,7 @@ SELECT
   cf8_23.value AS cf8_pos23,
   cf8_24_27.value AS cf8_pos24_27,
   i.itype,
-  YEAR(i.dateaccessioned)
+  YEAR(i.dateaccessioned) AS year
 FROM biblio b
 JOIN items i
   ON b.biblionumber = i.biblionumber

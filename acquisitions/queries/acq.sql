@@ -2,8 +2,8 @@ SELECT b.biblionumber AS biblio_id,
   RIGHT(best_intern.value, 1) AS substring,
   i.homebranch,
   i.itype,
-  i.permanent_location,
-  COUNT(*)
+  i.permanent_location AS location,
+  COUNT(*) AS count
 FROM biblio b
 JOIN ub_biblio_extra best_intern
   ON b.biblionumber = best_intern.biblionumber
