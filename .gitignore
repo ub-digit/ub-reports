@@ -1,4 +1,5 @@
 temp
+.env
 .env.local
 /output/*
 !/output/.gitkeep

@@ -1,0 +1,13 @@
+version: '3.6'
+
+services:
+  report:
+    image: report:0
+    environment:
+      KOHA_MY_DB_HOST: ${KOHA_MY_DB_HOST}
+      KOHA_MY_DB_USER: ${KOHA_MY_DB_USER}
+      KOHA_MY_DB_PASS: ${KOHA_MY_DB_PASS}
+      KOHA_MY_DB_NAME: ${KOHA_MY_DB_NAME}
+    network_mode: host
+    volumes:
+      - "$PWD/output:/apps/output"

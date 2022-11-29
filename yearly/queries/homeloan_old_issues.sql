@@ -1,13 +1,13 @@
-SELECT i.branchcode,
-       i.auto_renew,
+SELECT oi.branchcode,
+       oi.auto_renew,
        COUNT(*) AS Antal,
-       SUM(i.renewals_count) AS renewals
-  FROM issues i
+       SUM(oi.renewals_count) AS renewals
+  FROM old_issues oi
   JOIN borrowers b
-    ON i.borrowernumber = b.borrowernumber
+    ON oi.borrowernumber = b.borrowernumber
   JOIN items im
-    ON i.itemnumber = im.itemnumber
- WHERE YEAR(i.issuedate) = '%%QUERY_YEAR%%'
+    ON oi.itemnumber = im.itemnumber
+ WHERE YEAR(oi.issuedate) = '%%QUERY_YEAR%%'
    AND b.categorycode NOT IN ('BA', 'BE', 'BF', 'BK', 'BL', 'BM', 'EI', 'BN', 'BU')
    AND im.itype NOT IN ('13', '16')
  GROUP BY 1, 2

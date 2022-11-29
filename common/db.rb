@@ -14,6 +14,7 @@ class DB
   end
 
   def read_env(envfile)
+    return if !File.exists?(envfile)
     File.open(envfile, "rb") do |f|
       f.each_line do |line|
         next if line[/^\s*#/]
