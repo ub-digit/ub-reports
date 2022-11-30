@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   report:
-    image: report:0
+    image: docker.ub.gu.se/ub-reports:release-2022.11.002
     environment:
       KOHA_MY_DB_HOST: ${KOHA_MY_DB_HOST}
       KOHA_MY_DB_USER: ${KOHA_MY_DB_USER}
