@@ -13,7 +13,8 @@ module Yearly
       "48" => "Ge",
       "60" => "Ghdk",
       "62" => "Gumu",
-      "66" => "Gv"
+      "66" => "Gv",
+      "43" => "Depå Änggården"
     }
     LIBROW={
       "40" => 9,
@@ -23,7 +24,8 @@ module Yearly
       "48" => 13,
       "60" => 14,
       "62" => 15,
-      "66" => 16
+      "66" => 16,
+      "43" => 17
     }
     STYLES={
       "default" => {bg: "ffffff", fg: "000000"},

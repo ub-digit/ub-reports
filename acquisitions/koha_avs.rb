@@ -16,7 +16,8 @@ module Acquisitions
           "48" => "Ge",
           "60" => "Ghdk",
           "62" => "Gumu",
-          "66" => "Gv"
+          "66" => "Gv",
+          "43" => "Depå Änggården"
       }
     end
 
